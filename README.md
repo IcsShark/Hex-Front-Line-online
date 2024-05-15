@@ -1,2 +1,2 @@
-# JMC-1
-developed from JJ's board game by JMC.
+# JMC board game
+developed from JJ_CUBE's board game by JMC.
