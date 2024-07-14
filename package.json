@@ -1,0 +1,23 @@
+{
+  "name": "hex-front-line-online",
+  "version": "1.0.0",
+  "description": "HFL online game",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IcsShark/JMC-board-game.git"
+  },
+  "author": "Nagi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IcsShark/JMC-board-game/issues"
+  },
+  "homepage": "https://github.com/IcsShark/JMC-board-game#readme",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
