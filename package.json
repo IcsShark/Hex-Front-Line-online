@@ -18,6 +18,9 @@
   },
   "homepage": "https://github.com/IcsShark/JMC-board-game#readme",
   "dependencies": {
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "prettier": "^3.3.3",
+    "socket.io": "^4.7.5",
+    "ws": "^8.18.0"
   }
 }
