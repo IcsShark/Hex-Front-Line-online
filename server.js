@@ -16,8 +16,9 @@ let players = {};
 io.on('connect', (socket) => {
     socket.on('joinRoom', (roomId, name) => {
         const player = {name: name, role: "Spec", Id: socket.id};
+
         if (!rooms[roomId]) {
-            rooms[roomId] = [0, 0, 1, false];
+            rooms[roomId] = [0, 0, 1, false, 0];// atk(P1), def(P2), spec, gamelock, round
             players[roomId] = [];
         }
         else{
@@ -53,7 +54,6 @@ io.on('connect', (socket) => {
             }else{
                 rooms[roomId][2] -= 1;
             }
-            console.log(rooms[roomId]);
             io.to(roomId).emit("updatePlayer", players[roomId]);
         }
     })
@@ -72,7 +72,6 @@ io.on('connect', (socket) => {
             }else{
                 rooms[roomId][2] -= 1;
             }
-            console.log(rooms[roomId]);
             io.to(roomId).emit("updatePlayer", players[roomId]);
         }
     })
@@ -91,7 +90,6 @@ io.on('connect', (socket) => {
             }else{
                 rooms[roomId][1] -= 1;
             }
-            console.log(rooms[roomId]);
             io.to(roomId).emit("updatePlayer", players[roomId]);
         }
     })
@@ -114,14 +112,30 @@ io.on('connect', (socket) => {
     });
 
     socket.on("GameStart", (roomId) => {
-        rooms[roomId][3] = true;
-        socket.to(roomId).emit("GameLock", true);
+        if(rooms[roomId][0] === 1 && rooms[roomId][1] === 1){
+            rooms[roomId][3] = true;
+            io.to(roomId).emit("GameLock", true);
+            console.log("room "+roomId+': '+rooms[roomId]);
+        }
+    });
+
+    socket.on("chatacters", (characters, role, act) => {
+        if(act == "lock"){
+            if(role == "atk"){
+                let player = players[roomId].find(player => player.role === "P1");
+                player.role = role;
+            }else{
+                let player = players[roomId].find(player => player.role === "P2");
+                player.role = role;
+            }
+        }
+        socket.to(roomId).emit("matchUp", characters, role, act);
     });
 });
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'src', 'cover.html'));
-})
+});
 
 app.get('/menu', (req, res) => {
     res.sendFile(path.join(__dirname, 'src', 'menu.html'));
@@ -134,7 +148,16 @@ app.get(`/room/:roomid`, (req, res) => {
     } else {
         res.status(404).send('Room not found');
     }
-})
+});
+
+app.get(`/room/:roomid/:role`, (req, res) => {
+    const role = req.params.role;
+    if (role == "Spec") {
+        res.sendFile(path.join(__dirname,  'src', 'Spec.html'));
+    } else {
+        res.sendFile(path.join(__dirname,  'src', 'rolePage.html'));
+    }
+});
 
 server.listen(port, function(){
     console.log('Server is running on port ' + port);

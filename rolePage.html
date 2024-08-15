@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HexFrontLine</title>
+    <link id="stylesheet" rel="stylesheet" href="/css/RolePage.css">
+    <link rel="icon" type="image/x-icon" href="/image/favicon.ico">
+</head>
+<body id="role">
+    <div class="screen">
+        <div class="animate"></div>
+        <div class="countWarpper">
+            <div id="badge" class="roleBadge"></div>
+            <div id="counter" class="counter"></div>
+        </div>
+        <div class="roleWarpper">
+            <div class="lineOne">
+            </div>
+            <div class="lineTwo">
+            </div>
+        </div>
+        <div class="ready" onclick="roleLocker()"></div>
+    </div>
+</body>
+</html>
+
+<script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+<script src="/js/lobby.js"></script>
+<script src="/js/role.js"></script>

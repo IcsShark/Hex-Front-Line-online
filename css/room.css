@@ -1,0 +1,164 @@
+body{
+    background-image: url("../image/room_background.png");
+    background-repeat: no-repeat;
+    background-size: 100vw 100vh;
+    background-attachment: local;
+    display: flex;
+    justify-content: center;
+}
+.roomWrapper{
+    display: flex;
+    gap: 3%;
+    width: 65vw;
+    height: 94vh;
+    margin-top: 2vh;
+    border: 5px transparent;
+    box-sizing: border-box;
+}
+
+.P1{
+    position: relative;
+    width: 31%;
+    height: 100%;
+    box-sizing: border-box;
+}
+.P1 .button{
+    width: 9vw;
+    height: 18vh;
+    top: 81%;
+    left: 50%;
+    transform: translateX(-47%);
+    background-image: url("../image/atk.png");
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    position: absolute;
+    background-color: transparent;
+}
+.P1 .button:hover{
+    background-image: url("../image/atk_span.png");
+}
+.P1_list{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 70%;
+    box-sizing: border-box;
+}
+
+.Spectator{
+    position: relative;
+    width: 34%;
+    height: 100%;
+    box-sizing: border-box;
+}
+.Spec_list{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 70%;
+    box-sizing: border-box;
+}
+.Spectator .button{
+    width: 9vw;
+    height: 18vh;
+    top: 80%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-image: url("../image/spec.png");
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    position: absolute;
+    background-color: transparent;
+}
+.Spectator .button:hover{
+    background-image: url("../image/spec_span.png");
+}
+
+.P2{
+    position: relative;
+    width: 30%;
+    height: 100%;
+    box-sizing: border-box;
+}
+.P2 .button{
+    width: 9vw;
+    height: 18vh;
+    top: 81%;
+    left: 50%;
+    transform: translateX(-54%);
+    background-image: url("../image/def.png");
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    position: absolute;
+    background-color: transparent;
+}
+.P2 .button:hover{
+    background-image: url("../image/def_span.png");
+}
+.P2_list{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 70%;
+    box-sizing: border-box;
+}
+
+.p1_nametag , .p2_nametag, .spec_nametag{
+    display: grid;
+    place-items: center; 
+    background-image: url('../image/playername_inputField.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: #D0D0D0;
+    width: 96%;
+    height: 18%;
+    text-align: center;
+    align-items: center;
+    background-color: transparent;
+    font-size: 18px;
+    font-family: sans-serif, "Comic Sans MS";
+}
+
+.back{
+    margin-right: auto;
+    display: block;
+    align-items: center;
+}
+.back .button{
+    width: 5vw;
+    height: 44vh;
+    margin-top: 27vh;
+    transform: translate(-10%, 0%);
+    background-image: url('../image/back.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: transparent;
+}
+.back .button:hover{
+    background-image: url('../image/back_span.png');
+}
+
+.next{
+    margin-left: auto;
+    display: block;
+    align-items: center;
+}
+.next .button{
+    width: 5vw;
+    height: 44vh;
+    margin-top: 27vh;
+    transform: translate(10%, 0%);
+    background-image: url('../image/next.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: transparent;
+}
+.next .button:hover{
+    background-image: url('../image/next_span.png');
+}
