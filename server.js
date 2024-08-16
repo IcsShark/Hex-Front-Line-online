@@ -14,9 +14,19 @@ let rooms = {};
 let players = {};
 
 io.on('connect', (socket) => {
-    socket.on('joinRoom', (roomId, name) => {
-        const player = {name: name, role: "Spec", Id: socket.id};
+    socket.on('joinRoom', (roomId, name, act) => {
+        //inGame rejoin
+        if(act == "joinGame"){
+            let player = players[roomId].find(p => p.name === name);
+            if (player) {
+                player.Id = socket.id; // update socket id
+                socket.join(roomId);
+                return;
+            }
+        }
 
+        //new player
+        const player = {name: name, role: "Spec", Id: socket.id, inGame: false};
         if (!rooms[roomId]) {
             rooms[roomId] = [0, 0, 1, false, 0];// atk(P1), def(P2), spec, gamelock, round
             players[roomId] = [];
@@ -98,6 +108,8 @@ io.on('connect', (socket) => {
             const playerIndex = players[roomId].findIndex(player => player.Id === socket.id);
             if(playerIndex !== -1){
                 const player = players[roomId][playerIndex];
+                if(player.inGame == true) return;
+
                 if (player.role === "P1") {
                     rooms[roomId][0] -= 1;
                 } else if (player.role === "P2") {
@@ -109,17 +121,23 @@ io.on('connect', (socket) => {
                 break;
             }
         }
+        // io.to(roomId).emit("updatePlayer", players[roomId]);
     });
 
     socket.on("GameStart", (roomId) => {
         if(rooms[roomId][0] === 1 && rooms[roomId][1] === 1){
             rooms[roomId][3] = true;
             io.to(roomId).emit("GameLock", true);
+
+            players[roomId].forEach(player => {
+                player.inGame = true;
+            });
+
             console.log("room "+roomId+': '+rooms[roomId]);
         }
     });
 
-    socket.on("chatacters", (characters, role, act) => {
+    socket.on("characters", (roomId, characters, role, act) => {
         if(act == "lock"){
             if(role == "atk"){
                 let player = players[roomId].find(player => player.role === "P1");
@@ -129,6 +147,7 @@ io.on('connect', (socket) => {
                 player.role = role;
             }
         }
+        io.to(roomId).emit('test');
         socket.to(roomId).emit("matchUp", characters, role, act);
     });
 });
