@@ -5,12 +5,12 @@ body {
     background-attachment: local;
 }
 .button {
-    background-image: url('../image/b.png');
+    background-image: url('../image/startbutton.png');
     background-position: center;
     background-size: contain;
     background-attachment: fixed;
     background-repeat: no-repeat;
-    width: 17.6vw;
+    width: 17.4vw;
     height: 12.7vh;
     position: absolute;
     top: 75%;
@@ -18,7 +18,7 @@ body {
     transform: translate(-50%, -50%);
 }
 .button:hover {
-    background-image: url('../image/b_span.png');
+    background-image: url('../image/startbutton_span.png');
     background-attachment: fixed;
     background-repeat: no-repeat;
 }
