@@ -15,30 +15,30 @@ let players = {};
 
 io.on('connect', (socket) => {
     socket.on('joinRoom', (roomId, name, act) => {
-        //inGame rejoin
         if(act == "joinGame"){
+            //inGame rejoin
             let player = players[roomId].find(p => p.name === name);
-            if (player) {
+            if (player.inGame) {
                 player.Id = socket.id; // update socket id
                 socket.join(roomId);
                 return;
             }
+        }else{
+            //new player
+            const player = {name: name, role: "Spec", Id: socket.id, inGame: false};
+            if (!rooms[roomId]) {
+                rooms[roomId] = [0, 0, 1, false, 0];// atk(P1), def(P2), spec, gamelock, round
+                players[roomId] = [];
+            }
+            else{
+                rooms[roomId][2] += 1;
+            }
+            players[roomId].push(player);
+            
+            socket.join(roomId);
+            console.log(`User joined room: mission#${roomId}`);
+            io.to(roomId).emit("updatePlayer", players[roomId]);
         }
-
-        //new player
-        const player = {name: name, role: "Spec", Id: socket.id, inGame: false};
-        if (!rooms[roomId]) {
-            rooms[roomId] = [0, 0, 1, false, 0];// atk(P1), def(P2), spec, gamelock, round
-            players[roomId] = [];
-        }
-        else{
-            rooms[roomId][2] += 1;
-        }
-        players[roomId].push(player);
-        
-        socket.join(roomId);
-        console.log(`User joined room: mission#${roomId}`);
-        io.to(roomId).emit("updatePlayer", players[roomId]);
     })
 
     function changeRole(roomId, name, newRole) {
@@ -118,10 +118,10 @@ io.on('connect', (socket) => {
                     rooms[roomId][2] -= 1;
                 }
                 players[roomId].splice(playerIndex, 1);
+                io.to(roomId).emit("updatePlayer", players[roomId]);
                 break;
             }
         }
-        // io.to(roomId).emit("updatePlayer", players[roomId]);
     });
 
     socket.on("GameStart", (roomId) => {
@@ -138,17 +138,23 @@ io.on('connect', (socket) => {
     });
 
     socket.on("characters", (roomId, characters, role, act) => {
+        let player;
         if(act == "lock"){
             if(role == "atk"){
-                let player = players[roomId].find(player => player.role === "P1");
+                player = players[roomId].find(player => player.role === "P1");
                 player.role = role;
             }else{
-                let player = players[roomId].find(player => player.role === "P2");
+                player = players[roomId].find(player => player.role === "P2");
                 player.role = role;
             }
         }
-        io.to(roomId).emit('test');
         socket.to(roomId).emit("matchUp", characters, role, act);
+
+        if(players[roomId].some(player => player.role === "atk") && players[roomId].some(player => player.role === "def")){
+            setTimeout(() => {
+                io.to(roomId).emit("MissionStart");
+            }, 1500);   
+        }
     });
 });
 
