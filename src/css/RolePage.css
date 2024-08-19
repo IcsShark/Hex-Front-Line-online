@@ -49,6 +49,10 @@ body{
     background-image: url('../image/dazzle_background.png');
     animation: slideIn 0.7s ease-in-out forwards;
 }
+.animate.mist{
+    background-image: url('../image/mist_background.png');
+    animation: slideIn 0.7s ease-in-out forwards;
+}
 .animate.snipe{
     background-image: url('../image/snipe_background.png');
     animation: slideIn 0.7s ease-in-out forwards;
@@ -105,6 +109,12 @@ body{
     height: 80%;
     transform: translate(-13%, 2.5%);
     background-image: url("../image/dazzle_badge.png");
+}
+.roleBadge.mist {
+    width: 46%;
+    height: 80%;
+    transform: translate(-13%, 1%);
+    background-image: url("../image/mist_badge.png");
 }
 .roleBadge.snipe {
     background-image: url("../image/snipe_badge.png");
@@ -227,6 +237,19 @@ body{
 }
 .dazzleButton:hover{
     background-image: url("../image/dazzle_parallelogram_hover.png");
+}
+.mistButton{
+    height: 85%;
+    width: 95%;
+    background-image: url("../image/mist_parallelogram.png");
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    clip-path: polygon(30% 0%, 100% 0%, 70% 100%, 0% 100%);
+    margin-right: -5%;
+}
+.mistButton:hover{
+    background-image: url("../image/mist_parallelogram_hover.png");
 }
 .snipeButton{
     height: 85%;

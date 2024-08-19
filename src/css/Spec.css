@@ -67,7 +67,13 @@ body{
 .atkRole.volatile{
     background-image: url("../image/Spec_atk_volatile.png");
 }
-.atk.snipe{
+.atkRole.dazzle{
+    background-image: url("../image/Spec_atk_dazzle.png");
+}
+.atkRole.mist{
+    background-image: url("../image/Spec_atk_mist.png");
+}
+.atkRole.snipe{
     background-image: url("../image/Spec_atk_snipe.png");
 }
 
@@ -105,7 +111,7 @@ body{
     width: 7%;
     height: 15%;
     top: 70%;
-    left: 59.4%;
+    left: 40%;
     transform: translateX(-47%);
     background-image: url("../image/Spec_unlocked.png");
     background-position: center;
@@ -137,7 +143,7 @@ body{
     width: 7%;
     height: 15%;
     top: 70%;
-    left: 40%;
+    left: 59.4%;
     transform: translateX(-47%);
     background-image: url("../image/Spec_unlocked.png");
     background-position: center;

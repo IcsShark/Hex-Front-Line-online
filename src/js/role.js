@@ -1,7 +1,7 @@
 let rolelock = false;
 let Characters = 0;
 let selectedRoles = Array(5).fill(null);
-const atkCharacters = ["horus", "volatile", "dazzle", "horus", "snipe", "snipe", "snipe", "snipe",]; // atk character list
+const atkCharacters = ["horus", "volatile", "dazzle", "mist", "snipe", "snipe", "snipe", "snipe",]; // atk character list
 const defCharacters = ["citadel", "citadel", "citadel", "citadel", "citadel", "citadel", "citadel", "citadel"]; // def character list
 
 function createButtons(role) {
@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
     createButtons(role);
     
     if(role == "atk"){ // characters' button
-        buttons = document.querySelectorAll('.horusButton, .volatileButton, .dazzleButton, .snipeButton');
+        buttons = document.querySelectorAll('.horusButton, .volatileButton, .dazzleButton, .mistButton, .snipeButton');
     }else{
         buttons = document.querySelectorAll('.citadelButton');
     }

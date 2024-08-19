@@ -1,12 +1,10 @@
-const socket = sessionStorage.getItem('socket') ? io.connect(sessionStorage.getItem('socket')) : io(); // keep in the same io socket
-if (!sessionStorage.getItem('socket')) {
-    sessionStorage.setItem('socket', socket.io.uri);
-}
+const socket = io();
 
-let gamelock = (GetCookie("inGame")=="true") ? true : false;
+let gamelock = ((GetCookie("state"))==="inGame") ? true : false;
+console.log('state: '+GetCookie("state"));
 
 function SetCookie(cname, cvalue){
-    document.cookie = cname + '=' + cvalue + ';';
+    document.cookie = cname + '=' + cvalue + ';' + "path=/";
 }
 
 function GetCookie(cname){
@@ -24,6 +22,13 @@ function GetCookie(cname){
     }
     return "";
 }
+
+socket.off("errorMessage");
+socket.on("errorMessage", ErrorMessage);
+function ErrorMessage(mes){
+    alert(mes);
+}
+
 // cover
 function saveName(){
     var playername = document.getElementById("name").value;
@@ -31,7 +36,7 @@ function saveName(){
         playername = "guest";
     }
     SetCookie("playername", playername);
-    SetCookie("inGame", "false");
+    SetCookie("state", "init");
 }
 
 function getName(){
@@ -55,10 +60,9 @@ function saveCode(){
             screen.classList.remove('error-background');
         }, 3500);
 
-        alert("error, please enter the mission code again");
+        ErrorMessage("error, please enter the mission code again");
     }
     else{
-        //alert("#" + missionCode + " mission start");
         SetCookie("Room", missionCode);
         joinRoom();
     }
@@ -71,6 +75,7 @@ function getCode(){
 function joinRoom(){
     let roomid = getCode();
     window.location.href = `/room/${roomid}`;
+    SetCookie("state","inRoom");
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -80,13 +85,14 @@ document.addEventListener('DOMContentLoaded', () => {
         SetCookie("role","Spec");
         socket.emit('joinRoom', roomid, playername, "new");
         console.log("room loded");
+        socket.on("updatePlayer",updatePlayers);
     }
 });
 
 //room
 let newPlayerLock = true;
 
-socket.on("updatePlayer", (players) => {
+function updatePlayers(players) {
     const classNames = ["P1_list", "P2_list", "Spec_list"];
     classNames.forEach(className => {
         const elements = document.getElementsByClassName(className);
@@ -103,7 +109,7 @@ socket.on("updatePlayer", (players) => {
         element[0].insertAdjacentHTML("beforeend", `<div class="spec_nametag">${player.name}</div>`);
     });
     newPlayerLock = false;
-});
+}
 
 function becomeP1(){
     if(gamelock) return;
@@ -113,7 +119,7 @@ function becomeP1(){
     let role = GetCookie("role");
     if((role == "P2" || role == "Spec")){
         socket.emit("P1",missionCode , playername, role);
-        socket.on("P1", () =>{
+        socket.once("P1", () =>{
             SetCookie("role","P1");
         })
     }
@@ -127,7 +133,7 @@ function becomeP2(){
     let role = GetCookie("role");
     if((role == "P1" || role == "Spec")){
         socket.emit("P2",missionCode , playername, role);
-        socket.on("P2", () =>{
+        socket.once("P2", () =>{
             SetCookie("role","P2");
         });
     }
@@ -141,7 +147,7 @@ function becomeSpec(){
     let role = GetCookie("role");
     if(role != "Spec"){
         socket.emit("Spec",missionCode , playername, role);
-        socket.on("Spec", () =>{
+        socket.once("Spec", () =>{
             SetCookie("role","Spec");
         });
     }
@@ -160,36 +166,29 @@ function next(){
 
 // rolePage
 
-socket.on("GameLock", (lock) => {
+socket.once("GameLock", (lock) => {
     let role = GetCookie("role");
     let missionCode = getCode();
     
-    gamelock = lock;
-    SetCookie("inGame", "true");
+    if(lock) SetCookie("state", "inGame");
     window.location.href = `/room/${missionCode}/${role}`;
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log(gamelock);
     if(gamelock){
         let missionCode = getCode();
         let playername = getName();
 
         socket.emit('joinRoom', missionCode, playername, "joinGame");
-        console.log('inGame');
 
-        if (document.getElementById('Spec_role')) {
-            socket.on('test',() => {
-                console.log('recieved test');
-            });
-            socket.on("matchUp", handleMatchUp);
-            console.log('add io listener');
+        if(document.getElementById('Spec_role')){
+            socket.on("matchUp", SpecHandleMatchUp);
         }
+        socket.once("MissionStart",MissionStart);
     }
 });
 
-function handleMatchUp(characters, role, act) {
-console.log('recieved character data');
+function SpecHandleMatchUp(characters, role, act) { 
     if(act == "change"){
         characters.forEach((character, index) => {
             const roleElement = document.getElementById(`${role}${index+1}`);
@@ -197,11 +196,15 @@ console.log('recieved character data');
             roleElement.className = `${role}Role`;
             if (character) {
                 roleElement.classList.add(character);
-            } 
-        })
+            }
+        });
     }else{
-        const element = querySelector(`.${role}Lock`);
+        const element = document.querySelector(`.${role}Lock`);
         element.classList.add('lock');
     }
+}
 
+function MissionStart(){
+    let missionCode = getCode();
+    window.location.href = `/mission/${missionCode}`;
 }

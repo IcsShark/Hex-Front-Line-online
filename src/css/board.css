@@ -71,9 +71,47 @@ body {
     background-image: url("../image/pink_hex.png");
 }
 
+/* atk characters */
 .hexagon.has-piece[piece="horus"] {
     background-image: url("../image/horus.png");
 }
 .hexagon.has-piece[piece="horus"].selected {
     background-image: url("../image/horus_hover.png");
 }
+
+.hexagon.has-piece[piece="volatile"] {
+    background-image: url("../image/volatile.png");
+}
+.hexagon.has-piece[piece="volatile"].selected {
+    background-image: url("../image/volatile_hover.png");
+}
+
+.hexagon.has-piece[piece="dazzle"] {
+    background-image: url("../image/dazzle.png");
+}
+.hexagon.has-piece[piece="dazzle"].selected {
+    background-image: url("../image/dazzle_hover.png");
+}
+
+.hexagon.has-piece[piece="mist"] {
+    background-image: url("../image/mist.png");
+}
+.hexagon.has-piece[piece="mist"].selected {
+    background-image: url("../image/mist_hover.png");
+}
+
+.hexagon.has-piece[piece="snipe"] {
+    background-image: url("../image/snipe.png");
+}
+.hexagon.has-piece[piece="snipe"].selected {
+    background-image: url("../image/snipe_hover.png");
+}
+
+/* def characters */
+.hexagon.has-piece[piece="citadel"] {
+    background-image: url("../image/horus.png");
+}
+.hexagon.has-piece[piece="citadel"].selected {
+    background-image: url("../image/horus_hover.png");
+}
+
