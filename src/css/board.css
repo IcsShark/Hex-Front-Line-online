@@ -109,9 +109,9 @@ body {
 
 /* def characters */
 .hexagon.has-piece[piece="citadel"] {
-    background-image: url("../image/horus.png");
+    background-image: url("../image/citadel.png");
 }
 .hexagon.has-piece[piece="citadel"].selected {
-    background-image: url("../image/horus_hover.png");
+    background-image: url("../image/citadel_hover.png");
 }
 

@@ -154,8 +154,10 @@ function becomeSpec(){
 }
 
 function back(){
-    navigateToMenu();
+    window.location.href = `/`;
+    SetCookie("playername", '');
     SetCookie("Room", '');
+    SetCookie("state", "init");
 }
 
 function next(){

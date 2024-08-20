@@ -140,7 +140,6 @@ function roleLocker(){
         rolelock = true;
         const ready = document.querySelector('.ready');
         ready.classList.add('lock');
-        console.log("characters: "+selectedRoles);
         socket.emit("characters", missionCode, selectedRoles, role, "lock");
     }
 }

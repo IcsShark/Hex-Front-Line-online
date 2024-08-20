@@ -1,9 +1,8 @@
-const socket = io();
-
 let selectedSpawn = Array(5).fill(null);
 let selectedPiece = null;
+let characters = Array(5).fill(null);
 
-let role = (GetCookie("role")=="atk")? "atk" : "def";
+let role = (GetCookie("role")=="P1")? "atk" : "def";
 let missionCode = getCode();
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -43,7 +42,12 @@ document.addEventListener('DOMContentLoaded', () => {
             board.appendChild(hexagon);
         }
     }
-
+    if(role == "atk") {
+        socket.emit("atkRequestCharacters", missionCode);
+    }else if(role == "def") {
+        socket.emit("defRequestCharacters", missionCode);
+    }
+    socket.once("ReceiveCharacters", handleCharacterData);
     setInitPlace();
     socket.on("round",handleRoundData);
 });
@@ -119,6 +123,11 @@ function surroundEffect(hex, act){
 }
 
 // init game
+function handleCharacterData(data){
+    console.log('recieved data: '+data);
+    characters = data;
+}
+
 function startGame(){
     checkSpawn();
 
@@ -128,9 +137,10 @@ function startGame(){
         hexagon.addEventListener('click', handleRoleHexClick);
     });
     
+    socket.emit("GameInitData", missionCode, role, selectedSpawn);
 }
 
-function selectSpawn(){
+function selectSpawn(hexagon){
     const id = hexagon.getAttribute('name');
 
     const spawn = [
@@ -145,14 +155,16 @@ function selectSpawn(){
     ];
     const inSpawn = spawn.some(sp => sp.row + '*' + sp.col === id);
 
-    if (selectSpawn.includes(id)) {
+    if (selectedSpawn.includes(id)) {
         const index = selectedSpawn.indexOf(id);
-        selectSpawn[index] = null;
+        selectedSpawn[index] = null;
+        placePiece(null,id);
     } else if (selectedSpawn.includes(null)) {
         if((role == "atk" && inSpawn) || (role == "def" && !inSpawn)){
             for (let i = 0; i < 5; i++) {
                 if (selectedSpawn[i] === null) {
                     selectedSpawn[i] = id;
+                    placePiece(characters[i],id);
                     break;
                 }
             }
@@ -161,34 +173,58 @@ function selectSpawn(){
     }
 }
 
+function getRandomSpawns() {
+    let Spawns;
+    const redSpawns = [
+        { row: 1, col: 1 },
+        { row: 1, col: 5 },
+        { row: 1, col: 6 },
+        { row: 1, col: 10 },
+        { row: 10, col: 1 },
+        { row: 10, col: 5 },
+        { row: 10, col: 6 },
+        { row: 10, col: 10 }
+    ];
+    if(role == "atk"){// atk spawn
+        Spawns = redSpawns;
+        return Spawns.map(sp => `${sp.row}*${sp.col}`);
+    }
+
+    const availableSpawns = [];
+
+    for (let row = 1; row <= 10; row++) {
+        for (let col = 1; col <= 10; col++) {
+            const isExcluded = redSpawns.some(sp => sp.row === row && sp.col === col);
+            if (!isExcluded) {
+                availableSpawns.push({ row, col });
+            }
+        }
+    }
+
+    const randomSpawns = [];
+    while (randomSpawns.length < 5) {
+        const randomIndex = Math.floor(Math.random() * availableSpawns.length);
+        randomSpawns.push(availableSpawns.splice(randomIndex, 1)[0]);
+    }
+
+    return randomSpawns.map(sp => `${sp.row}*${sp.col}`);
+}
+
 function checkSpawn(){
     if(selectedSpawn.includes(null)){ // set defult spawn
-        if(role == "atk"){
-            selectedSpawn = [
-                '1*1',
-                '1*5',
-                '1*6',
-                '1*0',
-                '10*1',
-            ];
-        }else{
-            selectedSpawn = [
-                '1*1',
-                '1*5',
-                '1*6',
-                '1*0',
-                '10*1',
-            ];
-        }
+        selectedSpawn = getRandomSpawns();
     }
 
     selectedSpawn.forEach(sp =>{
         const index = selectedSpawn.indexOf(sp);
+        placePiece(null,sp);
         placePiece(characters[index],sp);
     });
 }
 
 function setInitPlace(){
+    console.log("characters : "+characters);
+
     let countdown = 30;
 
     const countdownElement = document.createElement('div');// init timer
@@ -214,4 +250,9 @@ function setInitPlace(){
 
 function handleRoundData(round, data){
 
+}
+
+function endRound(data){
+
+    socket.emit("endRound", );
 }
