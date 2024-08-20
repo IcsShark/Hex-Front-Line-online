@@ -12,6 +12,7 @@ const io = new Server(server, { pingInterval: 2000, pingTimeout: 5000 }); // soc
 
 let rooms = {};
 let players = {};
+const roles = {};
 
 io.on('connect', (socket) => {
     socket.on('joinRoom', (roomId, name, act) => {
@@ -27,8 +28,9 @@ io.on('connect', (socket) => {
             //new player
             const player = {name: name, role: "Spec", Id: socket.id, inGame: false};
             if (!rooms[roomId]) {
-                rooms[roomId] = [0, 0, 1, false, 0];// atk(P1), def(P2), spec, gamelock, round
+                rooms[roomId] = [0, 0, 1, false, -1];// atk(P1), def(P2), spec, gamelock, round
                 players[roomId] = [];
+                roles[roomId] = {atk: [], def: [], atkpos: [], defpos: []};
             }
             else{
                 rooms[roomId][2] += 1;
@@ -143,18 +145,64 @@ io.on('connect', (socket) => {
             if(role == "atk"){
                 player = players[roomId].find(player => player.role === "P1");
                 player.role = role;
+                roles[roomId].atk = characters;
             }else{
                 player = players[roomId].find(player => player.role === "P2");
                 player.role = role;
+                roles[roomId].def = characters;
             }
         }
+        socket.emit("ReceiveCharacters", characters);
         socket.to(roomId).emit("matchUp", characters, role, act);
 
         if(players[roomId].some(player => player.role === "atk") && players[roomId].some(player => player.role === "def")){
             setTimeout(() => {
                 io.to(roomId).emit("MissionStart");
-            }, 1500);   
+            }, 1500);
         }
+    });
+
+    socket.once("atkRequestCharacters", (roomId) => {
+        socket.emit("ReceiveCharacters", roles[roomId].atk);
+    });
+    socket.once("defRequestCharacters", (roomId) => {
+        socket.emit("ReceiveCharacters", roles[roomId].def);
+    });
+
+    function sendGameData(roomId, round, role, rolesData){
+        let atkplayer = players[roomId].find(player => player.role === "atk");
+        let defplayer = players[roomId].find(player => player.role === "def");
+
+        const GamerId = [atkplayer.Id, defplayer.Id];
+        
+        if(role == "Spec"){
+            socket.to(roomId).except(GamerId).emit(round, rolesData);
+        }else if(role == "atk"){
+
+        }else{
+
+        }
+    }
+
+    function sendRoundUpdateData(roomId, round, Data){
+        socket.to(roomId).emit();
+    }
+
+    socket.on("GameInitData", (roomId, role, spawn) => {
+        if(role == "atk"){
+            roles[roomId].atkpos = spawn;
+        }else{
+            roles[roomId].defpos = spawn;
+        }
+
+        rooms[roomId][4] += 1; // init round
+        if(rooms[roomId][4] == 1){
+            sendGameData(roomId, 1, "Spec", roles[roomId]);
+        }
+    });
+
+    socket.on("endRound" , () => {
+
     });
 });
 
@@ -182,6 +230,10 @@ app.get(`/room/:roomid/:role`, (req, res) => {
     } else {
         res.sendFile(path.join(__dirname,  'src', 'rolePage.html'));
     }
+});
+
+app.get(`/mission/:roomid`, (req, res) => {
+    res.sendFile(path.join(__dirname,  'src', 'board.html'));
 });
 
 server.listen(port, function(){
