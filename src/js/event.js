@@ -4,6 +4,9 @@ let characters = Array(5).fill(null);
 
 let role = (GetCookie("role")=="P1")? "atk" : "def";
 let missionCode = getCode();
+let countdownInterval;
+let step = 0;
+let point = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
     const board = document.querySelector(".board");
@@ -35,9 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 hexagon.classList.add("spawn");
             }
 
-            hexagon.addEventListener('click', function() {
-                selectSpawn(this);
-            });
+            hexagon.addEventListener('click', handleSelectSpawn);
 
             board.appendChild(hexagon);
         }
@@ -49,32 +50,137 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     socket.once("ReceiveCharacters", handleCharacterData);
     setInitPlace();
-    socket.on("round",handleRoundData);
+    socket.on("updateRound",handleRoundData);
+    socket.on("roundEvent",handleEventData);
 });
 
 //basic move functions
+
+function RoleHexClickEvent(event) {
+    handleRoleHexClick(event.currentTarget);
+}
 function handleRoleHexClick(hexagon) {
-    const piece = hexagon.getAttribute('piece');
-    if(selectedPiece == hexagon){
+    const roundElement = document.getElementById('round');
+    const round = parseInt(roundElement.textContent, 10);
+
+    if(( role == "atk" && !(round % 2) ) || (role == "def" && (round % 2))){
         return;
     }
 
-    if (selectedPiece && hexagon.classList.contains('surround')) {
-        surroundEffect(selectedPiece,false);
-        movePiece(selectedPiece, hexagon);
-        selectedPiece.classList.remove('selected');
+
+    const piece = hexagon.getAttribute('piece');
+
+    if (selectedPiece === hexagon) {
+        cancelSelectedPiece();
         selectedPiece = null;
-    } else if (piece) {
+        return;
+    }
+
+    if (piece) {
+        console.log('selectedRole: ' + piece);
+        cancelSelectedPiece();
         selectedPiece = hexagon;
         selectedPiece.classList.add('selected');
-        surroundEffect(selectedPiece,true);
+        return;
     }
+
+    if (!selectedPiece) return;
+
+    //move
+    if (selectedPiece.classList.contains('moving') && hexagon.classList.contains('surround')) {
+        surroundEffect(selectedPiece, false);
+        movePiece(selectedPiece, hexagon);
+        selectedPiece.classList.remove('selected');
+        sendMoveData(piece, hexagon.getAttribute('name'));
+        selectedPiece = null;
+    }
+    //attack
+    else if (selectedPiece.classList.contains('attacking') && hexagon.classList.contains('surround')) {
+        surroundEffect(selectedPiece, false);
+        attackTargetHex(piece, hexagon);
+        selectedPiece.classList.remove('selected');
+        selectedPiece = null;
+    }
+    //skill
+    else if (selectedPiece.classList.contains('usingSkill')) {
+        switch (selectedPiece.getAttribute('piece')) {
+            case "horus":
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+function move(){
+    if(!selectedPiece) return;
+    if(step > 0 && point > 0){
+        const stepElement = document.getElementById('step');
+        const pointElement = document.getElementById('point');
+
+        selectedPiece.classList.remove('usingSkill');
+        selectedPiece.classList.remove('attacking');
+        selectedPiece.classList.add("moving");
+        surroundEffect(selectedPiece,true);
+        step -= 1;
+        point -= 1;
+        stepElement.textContent = `${step}`;
+        pointElement.textContent = `${point}`;
+    }
+}
+
+function attack(){
+    if(!selectedPiece) return;
+    if(step > 0 && point > 0){
+        const stepElement = document.getElementById('step');
+        const pointElement = document.getElementById('point');
+
+        selectedPiece.classList.remove('usingSkill');
+        selectedPiece.classList.remove('moving');
+        selectedPiece.classList.add("attacking");
+        surroundEffect(selectedPiece,true);
+        step -= 1;
+        point -= 1;
+        stepElement.textContent = `${step}`;
+        pointElement.textContent = `${point}`;
+    }
+}
+
+function skill(){
+    if(!selectedPiece) return;
+    if(step > 0 && point > 0){
+        const stepElement = document.getElementById('step');
+        const pointElement = document.getElementById('point');
+
+        selectedPiece.classList.remove('moving');
+        selectedPiece.classList.remove('attacking');
+        selectedPiece.classList.add("usingSkill");
+        switch (selectedPiece.getAttribute('piece')) {
+            case "horus":
+                horusSkill();
+                break;
+        
+            default:
+                break;
+        }
+        step -= 1;
+        point -= 1;
+        stepElement.textContent = `${step}`;
+        pointElement.textContent = `${point}`;
+    }
+}
+
+function cancelSelectedPiece(){
+    if(!selectedPiece) return;
+    selectedPiece.classList.remove('selected');
+    selectedPiece.classList.remove('moving');
+    selectedPiece.classList.remove('usingSkill');
+    selectedPiece.classList.remove('attacking');
+    surroundEffect(selectedPiece,false);
 }
 
 function placePiece(Piece, id){
     const target = document.querySelector(`[name="${id}"]`);
-
-    console.log(`Placing piece: ${Piece} on ${id}`);
 
     if(Piece){
         target.classList.add('has-piece');
@@ -92,6 +198,13 @@ function movePiece(fromHexagon, toHexagon) {
         placePiece(null, fromHexagon.getAttribute('name'));
         placePiece(piece, toHexagon.getAttribute('name'));
     }
+}
+
+function attackTargetHex(attacker, hexagon){
+    socket.emit("attack", missionCode, role, attacker, hexagon.getAttribute('name'));
+    socket.on("", () => {
+
+    });
 }
 
 function surroundEffect(hex, act){
@@ -124,7 +237,7 @@ function surroundEffect(hex, act){
 
 // init game
 function handleCharacterData(data){
-    console.log('recieved data: '+data);
+    console.log('recieved characters data: '+data);
     characters = data;
 }
 
@@ -133,13 +246,16 @@ function startGame(){
 
     const hexagons = document.querySelectorAll('.hexagon');
     hexagons.forEach(hexagon => {
-        hexagon.removeEventListener('click', selectSpawn);
-        hexagon.addEventListener('click', handleRoleHexClick);
+        hexagon.removeEventListener('click', handleSelectSpawn);
+        hexagon.addEventListener('click', RoleHexClickEvent);
     });
     
     socket.emit("GameInitData", missionCode, role, selectedSpawn);
 }
 
+function handleSelectSpawn(event) {
+    selectSpawn(event.currentTarget);
+}
 function selectSpawn(hexagon){
     const id = hexagon.getAttribute('name');
 
@@ -186,7 +302,8 @@ function getRandomSpawns() {
         { row: 10, col: 10 }
     ];
     if(role == "atk"){// atk spawn
-        Spawns = redSpawns;
+        const shuffled = redSpawns.sort(() => 0.5 - Math.random());
+        Spawns = shuffled.slice(0, 5);
         return Spawns.map(sp => `${sp.row}*${sp.col}`);
     }
 
@@ -223,36 +340,138 @@ function checkSpawn(){
 }
 
 function setInitPlace(){
-    console.log("characters : "+characters);
-
     let countdown = 30;
 
-    const countdownElement = document.createElement('div');// init timer
-    countdownElement.id = 'countdown';
-    countdownElement.style.position = 'absolute';
-    countdownElement.style.top = '10px';
-    countdownElement.style.left = '10px';
-    countdownElement.style.fontSize = '20px';
-    countdownElement.style.color = 'red';
-    document.body.appendChild(countdownElement);
+    const countdownElement = document.getElementById('timer');
+    const roundElement = document.getElementById('round');
 
-    const countdownInterval = setInterval(() => {
-        countdownElement.textContent = `Game starts in: ${countdown} seconds`;
+
+    countdownInterval = setInterval(() => {
+        countdownElement.textContent = `${countdown}`;
         countdown--;
 
         if (countdown < 0) {
             clearInterval(countdownInterval);
-            document.body.removeChild(countdownElement);
+            countdownElement.textContent = '';
+            roundElement.textContent = '1';
             startGame();
         }
     }, 1000);
 }
 
 function handleRoundData(round, data){
+    console.log(round);
 
+    const roundElement = document.getElementById('round');
+    roundElement.textContent = `${round}`;
+
+    if(( role == "atk" && (round % 2) ) || (role == "def" && !(round % 2))){
+        createActButtons();
+        startRound();
+    }else{
+        deleteActButtons();
+    }
+}
+
+function handleEventData(){
+
+}
+
+function startRound(){
+    let countdown = 30;
+    
+    step = 5;
+    point = 10;
+
+    const countdownElement = document.getElementById('timer');
+    const stepElement = document.getElementById('step');
+    const pointElement = document.getElementById('point');
+    stepElement.textContent = '5';
+    pointElement.textContent = '10';
+
+    countdownInterval = setInterval(() => {
+        countdownElement.textContent = `${countdown}`;
+        countdown--;
+        if (countdown < 0 || step == 0 || point == 0) {
+            clearInterval(countdownInterval);
+            countdownElement.textContent = '';
+            stepElement.textContent = '';
+            pointElement.textContent = '';
+            endRound();
+        }
+    }, 1000);
+}
+
+function skipRound(){
+    const roundElement = document.getElementById('round');
+    const round = parseInt(roundElement.textContent, 10)
+    if(( role == "atk" && (round % 2) ) || (role == "def" && !(round % 2))){
+        endRound(null);
+    }
 }
 
 function endRound(data){
-
-    socket.emit("endRound", );
+    deleteActButtons();
+    cancelSelectedPiece();
+    const countdownElement = document.getElementById('timer');
+    countdownElement.textContent = '';
+    clearInterval(countdownInterval);
+    socket.emit("endRound", missionCode);
 }
+
+function createActButtons(){
+    // create move
+    const moveButton = document.createElement('div');
+    moveButton.id = 'move';
+    moveButton.className = 'move';
+    moveButton.onclick = () => move();
+    
+    // create attack
+    const attackButton = document.createElement('div');
+    attackButton.id = 'attack';
+    attackButton.className = 'attack';
+    attackButton.onclick = () => attack();
+    
+    // create skill
+    const skillButton = document.createElement('div');
+    skillButton.id = 'skill';
+    skillButton.className = 'skill';
+    skillButton.onclick = () => skill();
+
+    // create skip
+    const skipButton = document.createElement('div');
+    skipButton.id = 'skip';
+    skipButton.className = 'skip';
+    skipButton.onclick = () => skipRound();
+
+    const screen = document.querySelector('.screen');
+    screen.appendChild(moveButton);
+    screen.appendChild(attackButton);
+    screen.appendChild(skillButton);
+    screen.appendChild(skipButton);
+}
+
+function deleteActButtons(){// remove all actButtons
+    const screen = document.querySelector('.screen');
+
+    const moveElement = document.getElementById("move");
+    const attackElement = document.getElementById("attack");
+    const skillElement = document.getElementById("skill");
+    const skipElement = document.getElementById("skip");
+    if(moveElement) screen.removeChild(moveElement);
+    if(attackElement) screen.removeChild(attackElement);
+    if(skillElement) screen.removeChild(skillElement);
+    if(skipElement) screen.removeChild(skipElement);
+}
+
+function sendMoveData(piece, destination){
+    socket.emit("characterMoving", missionCode, role, piece, destination);
+}
+
+// atk skill
+
+function horusSkill(){
+    surroundEffect(selectedPiece,true);
+}
+
+// def skill
