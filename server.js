@@ -134,8 +134,6 @@ io.on('connect', (socket) => {
             players[roomId].forEach(player => {
                 player.inGame = true;
             });
-
-            console.log("room "+roomId+': '+rooms[roomId]);
         }
     });
 
@@ -162,10 +160,10 @@ io.on('connect', (socket) => {
         }
     });
 
-    socket.once("atkRequestCharacters", (roomId) => {
+    socket.on("atkRequestCharacters", (roomId) => {
         socket.emit("ReceiveCharacters", roles[roomId].atk);
     });
-    socket.once("defRequestCharacters", (roomId) => {
+    socket.on("defRequestCharacters", (roomId) => {
         socket.emit("ReceiveCharacters", roles[roomId].def);
     });
 
@@ -176,7 +174,7 @@ io.on('connect', (socket) => {
         const GamerId = [atkplayer.Id, defplayer.Id];
         
         if(role == "Spec"){
-            socket.to(roomId).except(GamerId).emit(round, rolesData);
+            socket.to(roomId).except(GamerId).emit("eventData", round, rolesData);
         }else if(role == "atk"){
 
         }else{
@@ -185,7 +183,7 @@ io.on('connect', (socket) => {
     }
 
     function sendRoundUpdateData(roomId, round, Data){
-        socket.to(roomId).emit();
+        io.to(roomId).emit("updateRound", round, Data);
     }
 
     socket.on("GameInitData", (roomId, role, spawn) => {
@@ -197,12 +195,29 @@ io.on('connect', (socket) => {
 
         rooms[roomId][4] += 1; // init round
         if(rooms[roomId][4] == 1){
+            console.log("room "+roomId+' start the mission: '+rooms[roomId]);
             sendGameData(roomId, 1, "Spec", roles[roomId]);
+            sendRoundUpdateData(roomId, 1, null);
         }
     });
 
-    socket.on("endRound" , () => {
+    socket.on("endRound" , (roomId) => {
+        rooms[roomId][4] += 1;
+        console.log("room "+roomId+" is in the round "+rooms[roomId][4]);
+        sendRoundUpdateData(roomId, rooms[roomId][4], null);
+    });
 
+    socket.on("characterMoving", (roomId, role, character, pos) => {
+        const team = role === 'atk' ? roles[roomId].atk : roles[roomId].def;
+        const teamPos = role === 'atk' ? roles[roomId].atkpos : roles[roomId].defpos;
+        const charIndex = team.indexOf(character);
+        teamPos[charIndex] = pos;
+    })
+
+    socket.on("attack", (roomId, role, attacker, target) => {
+        const opponentTeam = role === 'atk' ? roles[roomId].def : roles[roomId].atk;
+        const opponentPos = role === 'atk' ? roles[roomId].defpos : roles[roomId].atkpos;
+        const targetIndex = opponentPos.indexOf(target);
     });
 });
 
