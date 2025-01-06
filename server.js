@@ -30,7 +30,7 @@ io.on('connect', (socket) => {
             if (!rooms[roomId]) {
                 rooms[roomId] = [0, 0, 1, false, -1];// atk(P1), def(P2), spec, gamelock, round
                 players[roomId] = [];
-                roles[roomId] = {atk: [], def: [], atkpos: [], defpos: []};
+                roles[roomId] = {atk: [], def: [], atkpos: [], defpos: [], atkItem: [], defItem: [], atkItemPos: [], defItemPos: []};
             }
             else{
                 rooms[roomId][2] += 1;
@@ -164,10 +164,11 @@ io.on('connect', (socket) => {
         socket.emit("ReceiveCharacters", roles[roomId].atk);
     });
     socket.on("defRequestCharacters", (roomId) => {
+        roles[roomId].def.push('spike');
         socket.emit("ReceiveCharacters", roles[roomId].def);
     });
 
-    function sendGameData(roomId, round, role, rolesData){
+    function sendGameData(roomId, round, role, rolesData, act){
         let atkplayer = players[roomId].find(player => player.role === "atk");
         let defplayer = players[roomId].find(player => player.role === "def");
 
@@ -176,9 +177,17 @@ io.on('connect', (socket) => {
         if(role == "Spec"){
             socket.to(roomId).except(GamerId).emit("eventData", round, rolesData);
         }else if(role == "atk"){
-
+            if(act == "Item"){
+                socket.to(atkplayer.Id).emit("ItemBreak", rolesData);
+            }else if(act == "character"){
+                socket.to(atkplayer.Id).emit("CharacterDown", rolesData);
+            }
         }else{
-
+            if(act == "Item"){
+                socket.to(defplayer.Id).emit("ItemBreak", rolesData);
+            }else if(act == "character"){
+                socket.to(defplayer.Id).emit("CharacterDown", rolesData);
+            }
         }
     }
 
@@ -194,9 +203,10 @@ io.on('connect', (socket) => {
         }
 
         rooms[roomId][4] += 1; // init round
+
         if(rooms[roomId][4] == 1){
             console.log("room "+roomId+' start the mission: '+rooms[roomId]);
-            sendGameData(roomId, 1, "Spec", roles[roomId]);
+            sendGameData(roomId, 1, "Spec", roles[roomId], null);
             sendRoundUpdateData(roomId, 1, null);
         }
     });
@@ -212,12 +222,125 @@ io.on('connect', (socket) => {
         const teamPos = role === 'atk' ? roles[roomId].atkpos : roles[roomId].defpos;
         const charIndex = team.indexOf(character);
         teamPos[charIndex] = pos;
+        console.log(team[charIndex]+" move to "+teamPos[charIndex]);
+    })
+
+    socket.on("ItemData", (roomId, role, Item, pos, act) => {
+        const teamItem = role === 'atk' ? roles[roomId].atkItem : roles[roomId].defItem;
+        const teamItemPos = role === 'atk' ? roles[roomId].atkItemPos : roles[roomId].defItemPos;
+        
+        const itemIndex = teamItemPos.indexOf(pos);
+        
+        if(act == "add"){
+
+            if (itemIndex !== -1) { 
+                teamItem[itemIndex] = Item;
+            } else {
+                teamItem.push(Item);
+                teamItemPos.push(pos);
+            }
+        }else if(act == "break"){
+            teamItem.splice(itemIndex, 1);
+            teamItemPos.splice(itemIndex, 1);
+        }
     })
 
     socket.on("attack", (roomId, role, attacker, target) => {
         const opponentTeam = role === 'atk' ? roles[roomId].def : roles[roomId].atk;
         const opponentPos = role === 'atk' ? roles[roomId].defpos : roles[roomId].atkpos;
         const targetIndex = opponentPos.indexOf(target);
+    });
+
+
+    socket.on("guessingHex", (roomId, role, hex) => {
+        const enemyRole = role === 'atk' ? 'def' : 'atk';
+        const enemyPos = roles[roomId][`${enemyRole}pos`];
+        const enemyItemPos = roles[roomId][`${enemyRole}ItemPos`];
+        const result = [];
+
+        hex.forEach(hex => {
+            const enemyCharacterIndex = enemyPos.indexOf(hex);
+            const enemyItemIndex = enemyItemPos.indexOf(hex);
+
+            if(enemyCharacterIndex !== -1 || enemyItemIndex !== -1){
+                result.push(hex);
+            }
+        });
+
+        socket.emit("hexGuessResult", result);
+    })
+    socket.on("checkingHex", (roomId, role, hex) => {
+        const enemyRole = role === 'atk' ? 'def' : 'atk';
+        const enemyPos = roles[roomId][`${enemyRole}pos`];
+        const enemyItemPos = roles[roomId][`${enemyRole}ItemPos`];
+        const result = [];
+
+        hex.forEach((hex, index) => {
+            const enemyCharacterIndex = enemyPos.indexOf(hex);
+            const enemyItemIndex = enemyItemPos.indexOf(hex);
+
+            if (!result[index]) {
+                result[index] = {piece: "", item: ""};
+            }
+
+            if(enemyCharacterIndex !== -1){
+                result[index].piece = roles[roomId][`${enemyRole}`][enemyCharacterIndex];
+            }
+            if(enemyItemIndex !== -1){
+                result[index].item = roles[roomId][`${enemyRole}`][enemyItemIndex];
+            }
+            if(enemyCharacterIndex === -1 && enemyItemIndex === -1){
+                result[index] = null;
+            }
+        });
+
+        socket.emit("hexCheckResult", result);
+    });
+
+    socket.on("breakingItem", (roomId, role, hex) => {
+        const enemyRole = role === 'atk' ? 'def' : 'atk';
+        const enemyItemPos = roles[roomId][`${enemyRole}ItemPos`];
+        const result = [];
+
+        hex.forEach((hex, index) => {
+            const enemyItemIndex = enemyItemPos.indexOf(hex);
+
+            if(enemyItemIndex !== -1){
+                result[index] = roles[roomId][`${enemyRole}Item`][enemyItemIndex];
+                sendGameData(roomId, rooms[roomId][4], enemyRole, hex, "Item");
+                
+                roles[roomId][`${enemyRole}Item`].splice(enemyItemIndex, 1);
+                roles[roomId][`${enemyRole}ItemPos`].splice(enemyItemIndex, 1);
+            }
+            if(enemyItemIndex === -1){
+                result[index] = null;
+            }
+        });
+
+        socket.emit("ItemResult", result);
+    });
+    socket.on("attackeEnemy", (roomId, role, hex) => {
+        const enemyRole = role === 'atk' ? 'def' : 'atk';
+        const enemyPos = roles[roomId][`${enemyRole}Pos`];
+        const enemyItemPos = roles[roomId][`${enemyRole}ItemPos`];
+        const result = [];
+
+        hex.forEach((hex, index) => {
+            const enemyIndex = enemyPos.indexOf(hex);
+
+            if(enemyIndex !== -1){
+                result[index] = roles[roomId][`${enemyRole}`][enemyIndex];
+                sendGameData(roomId, rooms[roomId][4], enemyRole, hex, "character");
+                
+                roles[roomId][`${enemyRole}`][enemyIndex] = null;
+                roles[roomId][`${enemyRole}Pos`][enemyIndex] = null;
+            }
+            if(enemyIndex === -1){
+                result[index] = null;
+            }
+        });
+
+        socket.emit("enemyResult", result);
     });
 });
 

@@ -57,9 +57,49 @@ body{
     background-image: url('../image/snipe_background.png');
     animation: slideIn 0.7s ease-in-out forwards;
 }
+.animate.gallop{
+    background-image: url('../image/gallop_background.png');
+    animation: slideIn 0.7s ease-in-out forwards;
+}
+.animate.inherit{
+    background-image: url('../image/inherit_background.png');
+    animation: slideIn 0.7s ease-in-out forwards;
+}
+.animate.seismic{
+    background-image: url('../image/seismic_background.png');
+    animation: slideIn 0.7s ease-in-out forwards;
+}
  /* def animate */
 .animate.citadel{
     background-image: url('../image/citadel_background.png');
+    animation: slideIn 0.7s ease-in-out forwards;
+}
+.animate.emp{
+    background-image: url('../image/emp_background.png');
+    animation: slideIn 0.7s ease-in-out forwards;
+}
+.animate.fangs{
+    background-image: url('../image/fangs_background.png');
+    animation: slideIn 0.7s ease-in-out forwards;
+}
+.animate.venom{
+    background-image: url('../image/venom_background.png');
+    animation: slideIn 0.7s ease-in-out forwards;
+}
+.animate.aid{
+    background-image: url('../image/aid_background.png');
+    animation: slideIn 0.7s ease-in-out forwards;
+}
+.animate.echo{
+    background-image: url('../image/echo_background.png');
+    animation: slideIn 0.7s ease-in-out forwards;
+}
+.animate.hive{
+    background-image: url('../image/hive_background.png');
+    animation: slideIn 0.7s ease-in-out forwards;
+}
+.animate.yotorn{
+    background-image: url('../image/yotorn_background.png');
     animation: slideIn 0.7s ease-in-out forwards;
 }
 
@@ -119,6 +159,15 @@ body{
 .roleBadge.snipe {
     background-image: url("../image/snipe_badge.png");
 }
+.roleBadge.gallop {
+    background-image: url("../image/gallop_badge.png");
+}
+.roleBadge.inherit {
+    background-image: url("../image/inherit_badge.png");
+}
+.roleBadge.seismic {
+    background-image: url("../image/seismic_badge.png");
+}
  /* def badge */
 .roleBadge.citadel {
     width: 46%;
@@ -126,6 +175,49 @@ body{
     transform: translate(-13%, 2.7%);
     background-image: url("../image/citadel_badge.png");
 }
+.roleBadge.emp {
+    width: 46%;
+    height: 80%;
+    transform: translate(-13%, 2.7%);
+    background-image: url("../image/emp_badge.png");
+}
+.roleBadge.fangs {
+    width: 46%;
+    height: 80%;
+    transform: translate(-13%, 2.7%);
+    background-image: url("../image/fangs_badge.png");
+}
+.roleBadge.venom {
+    width: 46%;
+    height: 80%;
+    transform: translate(-13%, 2.7%);
+    background-image: url("../image/venom_badge.png");
+}
+.roleBadge.aid {
+    width: 46%;
+    height: 80%;
+    transform: translate(-13%, 2.7%);
+    background-image: url("../image/aid_badge.png");
+}
+.roleBadge.echo {
+    width: 46%;
+    height: 80%;
+    transform: translate(-13%, 2.7%);
+    background-image: url("../image/echo_badge.png");
+}
+.roleBadge.hive {
+    width: 46%;
+    height: 80%;
+    transform: translate(-13%, 2.7%);
+    background-image: url("../image/hive_badge.png");
+}
+.roleBadge.yotorn {
+    width: 46%;
+    height: 80%;
+    transform: translate(-13%, 2.7%);
+    background-image: url("../image/yotorn_badge.png");
+}
+
 
 .counter {
     margin-left: 70.3%;
@@ -264,6 +356,45 @@ body{
 .snipeButton:hover{
     background-image: url("../image/snipe_parallelogram_hover.png");
 }
+.gallopButton{
+    height: 85%;
+    width: 95%;
+    background-image: url("../image/gallop_parallelogram.png");
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    clip-path: polygon(30% 0%, 100% 0%, 70% 100%, 0% 100%);
+    margin-right: -5%;
+}
+.gallopButton:hover{
+    background-image: url("../image/gallop_parallelogram_hover.png");
+}
+.inheritButton{
+    height: 85%;
+    width: 95%;
+    background-image: url("../image/inherit_parallelogram.png");
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    clip-path: polygon(30% 0%, 100% 0%, 70% 100%, 0% 100%);
+    margin-right: -5%;
+}
+.inheritButton:hover{
+    background-image: url("../image/inherit_parallelogram_hover.png");
+}
+.seismicButton{
+    height: 85%;
+    width: 95%;
+    background-image: url("../image/seismic_parallelogram.png");
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    clip-path: polygon(30% 0%, 100% 0%, 70% 100%, 0% 100%);
+    margin-right: -5%;
+}
+.seismicButton:hover{
+    background-image: url("../image/seismic_parallelogram_hover.png");
+}
  /* def button */
 .citadelButton{
     height: 85%;
@@ -277,6 +408,97 @@ body{
 }
 .citadelButton:hover{
     background-image: url("../image/citadel_parallelogram_hover.png");
+}
+.empButton{
+    height: 85%;
+    width: 95%;
+    background-image: url("../image/emp_parallelogram.png");
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    clip-path: polygon(30% 0%, 100% 0%, 70% 100%, 0% 100%);
+    margin-right: -5%;
+}
+.empButton:hover{
+    background-image: url("../image/emp_parallelogram_hover.png");
+}
+.fangsButton{
+    height: 85%;
+    width: 95%;
+    background-image: url("../image/fangs_parallelogram.png");
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    clip-path: polygon(30% 0%, 100% 0%, 70% 100%, 0% 100%);
+    margin-right: -5%;
+}
+.fangsButton:hover{
+    background-image: url("../image/fangs_parallelogram_hover.png");
+}
+.venomButton{
+    height: 85%;
+    width: 95%;
+    background-image: url("../image/venom_parallelogram.png");
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    clip-path: polygon(30% 0%, 100% 0%, 70% 100%, 0% 100%);
+    margin-right: -5%;
+}
+.venomButton:hover{
+    background-image: url("../image/venom_parallelogram_hover.png");
+}
+.aidButton{
+    height: 85%;
+    width: 95%;
+    background-image: url("../image/aid_parallelogram.png");
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    clip-path: polygon(30% 0%, 100% 0%, 70% 100%, 0% 100%);
+    margin-right: -5%;
+}
+.aidButton:hover{
+    background-image: url("../image/aid_parallelogram_hover.png");
+}
+.echoButton{
+    height: 85%;
+    width: 95%;
+    background-image: url("../image/echo_parallelogram.png");
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    clip-path: polygon(30% 0%, 100% 0%, 70% 100%, 0% 100%);
+    margin-right: -5%;
+}
+.echoButton:hover{
+    background-image: url("../image/echo_parallelogram_hover.png");
+}
+.hiveButton{
+    height: 85%;
+    width: 95%;
+    background-image: url("../image/hive_parallelogram.png");
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    clip-path: polygon(30% 0%, 100% 0%, 70% 100%, 0% 100%);
+    margin-right: -5%;
+}
+.hiveButton:hover{
+    background-image: url("../image/hive_parallelogram_hover.png");
+}
+.yotornButton{
+    height: 85%;
+    width: 95%;
+    background-image: url("../image/yotorn_parallelogram.png");
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    clip-path: polygon(30% 0%, 100% 0%, 70% 100%, 0% 100%);
+    margin-right: -5%;
+}
+.yotornButton:hover{
+    background-image: url("../image/yotorn_parallelogram_hover.png");
 }
 
 .ready{

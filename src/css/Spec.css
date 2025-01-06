@@ -76,6 +76,15 @@ body{
 .atkRole.snipe{
     background-image: url("../image/Spec_atk_snipe.png");
 }
+.atkRole.gallop{
+    background-image: url("../image/Spec_atk_gallop.png");
+}
+.atkRole.inherit{
+    background-image: url("../image/Spec_atk_inherit.png");
+}
+.atkRole.seismic{
+    background-image: url("../image/Spec_atk_seismic.png");
+}
 
 .defRole{
     width: 73%;
@@ -91,6 +100,27 @@ body{
 }
 .defRole.citadel{
     background-image: url("../image/Spec_def_citadel.png");
+}
+.defRole.emp{
+    background-image: url("../image/Spec_def_emp.png");
+}
+.defRole.fangs{
+    background-image: url("../image/Spec_def_fangs.png");
+}
+.defRole.venom{
+    background-image: url("../image/Spec_def_venom.png");
+}
+.defRole.aid{
+    background-image: url("../image/Spec_def_aid.png");
+}
+.defRole.echo{
+    background-image: url("../image/Spec_def_echo.png");
+}
+.defRole.hive{
+    background-image: url("../image/Spec_def_hive.png");
+}
+.defRole.yotorn{
+    background-image: url("../image/Spec_def_yotorn.png");
 }
 
 .atk{

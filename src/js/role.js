@@ -1,8 +1,8 @@
 let rolelock = false;
 let Characters = 0;
 let selectedRoles = Array(5).fill(null);
-const atkCharacters = ["horus", "volatile", "dazzle", "mist", "snipe", "snipe", "snipe", "snipe",]; // atk character list
-const defCharacters = ["citadel", "citadel", "citadel", "citadel", "citadel", "citadel", "citadel", "citadel"]; // def character list
+const atkCharacters = ["horus", "volatile", "dazzle", "mist", "snipe", "gallop", "inherit", "seismic"]; // atk character list
+const defCharacters = ["citadel", "emp", "fangs", "venom", "aid", "echo", "hive", "yotorn"]; // def character list
 
 function createButtons(role) {
     const lineOne = document.querySelector('.lineOne');
@@ -39,9 +39,9 @@ document.addEventListener("DOMContentLoaded", () => {
     createButtons(role);
     
     if(role == "atk"){ // characters' button
-        buttons = document.querySelectorAll('.horusButton, .volatileButton, .dazzleButton, .mistButton, .snipeButton');
+        buttons = document.querySelectorAll('.horusButton, .volatileButton, .dazzleButton, .mistButton, .snipeButton, .gallopButton, .inheritButton, .seismicButton');
     }else{
-        buttons = document.querySelectorAll('.citadelButton');
+        buttons = document.querySelectorAll('.citadelButton, .empButton, .fangsButton, .venomButton, .aidButton, .echoButton, .hiveButton, .yotornButton');
     }
     const affectedElement = document.querySelector('.animate');
 
