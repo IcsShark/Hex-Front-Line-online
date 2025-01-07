@@ -1,5 +1,0 @@
-# character list:
-
-## atk
-
-## def
