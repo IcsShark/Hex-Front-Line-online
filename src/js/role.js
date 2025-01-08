@@ -31,7 +31,7 @@ function createButtons(role) {
     });
 }
 
-let role = (GetCookie("role")=="P1")? "atk" : "def";
+let role = (GetCookie("role")=="P1")? "atk" : "atk";
 let missionCode = getCode();
 let buttons;
 

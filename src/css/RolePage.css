@@ -153,19 +153,28 @@ body{
 .roleBadge.mist {
     width: 46%;
     height: 80%;
-    transform: translate(-13%, 1%);
+    transform: translate(-14%, 2.7%);
     background-image: url("../image/mist_badge.png");
 }
 .roleBadge.snipe {
     background-image: url("../image/snipe_badge.png");
 }
 .roleBadge.gallop {
+    width: 46%;
+    height: 80%;
+    transform: translate(-12%, 3%);
     background-image: url("../image/gallop_badge.png");
 }
 .roleBadge.inherit {
+    width: 46%;
+    height: 80%;
+    transform: translate(-12%, 3%);
     background-image: url("../image/inherit_badge.png");
 }
 .roleBadge.seismic {
+    width: 46%;
+    height: 80%;
+    transform: translate(-12%, 3%);
     background-image: url("../image/seismic_badge.png");
 }
  /* def badge */

@@ -284,6 +284,36 @@ body {
     z-index: 4;
 }
 
+.hexagon.has-piece[piece="gallop"],
+.hexagon.has-enemypiece[enemypiece="gallop"] {
+    background-image: url("../image/gallop.png");
+    z-index: 4;
+}
+.hexagon.has-piece[piece="gallop"].selected {
+    background-image: url("../image/gallop_hover.png");
+    z-index: 4;
+}
+
+.hexagon.has-piece[piece="inherit"],
+.hexagon.has-enemypiece[enemypiece="inherit"] {
+    background-image: url("../image/inherit.png");
+    z-index: 4;
+}
+.hexagon.has-piece[piece="inherit"].selected {
+    background-image: url("../image/inherit_hover.png");
+    z-index: 4;
+}
+
+.hexagon.has-piece[piece="seismic"],
+.hexagon.has-enemypiece[enemypiece="seismic"] {
+    background-image: url("../image/seismic.png");
+    z-index: 4;
+}
+.hexagon.has-piece[piece="seismic"].selected {
+    background-image: url("../image/seismic_hover.png");
+    z-index: 4;
+}
+
 /* atk items */
 
 .hexagon.has-item[item="drone"] {
@@ -301,6 +331,76 @@ body {
 }
 .hexagon.has-piece[piece="citadel"].selected {
     background-image: url("../image/citadel_hover.png");
+    z-index: 4;
+}
+
+.hexagon.has-piece[piece="emp"],
+.hexagon.has-enemypiece[enemypiece="emp"] {
+    background-image: url("../image/emp.png");
+    z-index: 4;
+}
+.hexagon.has-piece[piece="emp"].selected {
+    background-image: url("../image/emp_hover.png");
+    z-index: 4;
+}
+
+.hexagon.has-piece[piece="fangs"],
+.hexagon.has-enemypiece[enemypiece="fangs"] {
+    background-image: url("../image/fangs.png");
+    z-index: 4;
+}
+.hexagon.has-piece[piece="fangs"].selected {
+    background-image: url("../image/fangs_hover.png");
+    z-index: 4;
+}
+
+.hexagon.has-piece[piece="venom"],
+.hexagon.has-enemypiece[enemypiece="venom"] {
+    background-image: url("../image/venom.png");
+    z-index: 4;
+}
+.hexagon.has-piece[piece="venom"].selected {
+    background-image: url("../image/venom_hover.png");
+    z-index: 4;
+}
+
+.hexagon.has-piece[piece="aid"],
+.hexagon.has-enemypiece[enemypiece="aid"] {
+    background-image: url("../image/aid.png");
+    z-index: 4;
+}
+.hexagon.has-piece[piece="aid"].selected {
+    background-image: url("../image/aid_hover.png");
+    z-index: 4;
+}
+
+.hexagon.has-piece[piece="echo"],
+.hexagon.has-enemypiece[enemypiece="echo"] {
+    background-image: url("../image/echo.png");
+    z-index: 4;
+}
+.hexagon.has-piece[piece="echo"].selected {
+    background-image: url("../image/echo_hover.png");
+    z-index: 4;
+}
+
+.hexagon.has-piece[piece="hive"],
+.hexagon.has-enemypiece[enemypiece="hive"] {
+    background-image: url("../image/hive.png");
+    z-index: 4;
+}
+.hexagon.has-piece[piece="hive"].selected {
+    background-image: url("../image/hive_hover.png");
+    z-index: 4;
+}
+
+.hexagon.has-piece[piece="yotorn"],
+.hexagon.has-enemypiece[enemypiece="yotorn"] {
+    background-image: url("../image/yotorn.png");
+    z-index: 4;
+}
+.hexagon.has-piece[piece="yotorn"].selected {
+    background-image: url("../image/yotorn_hover.png");
     z-index: 4;
 }
 
