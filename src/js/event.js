@@ -492,6 +492,11 @@ function getRandomSpawns() {
 
 function checkSpawn(){
     if(selectedSpawn.includes(null)){ // set defult spawn
+        selectedSpawn.forEach(sp =>{
+            if(sp){
+                placePiece(null,sp);
+            }
+        });
         selectedSpawn = getRandomSpawns();
     }
 
